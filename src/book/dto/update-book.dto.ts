@@ -30,7 +30,6 @@ import {
     readonly category: Category;
 
     @IsOptional()
-    @IsEnum(Role, { message: 'Please enter correct role.' })
     readonly role: Role;
   
     @IsEmpty({ message: 'You cannot pass user id' })

@@ -14,5 +14,13 @@ export class LoginDto {
   @IsNotEmpty()
     @IsEnum(Role, { message: 'Please enter correct role.' })
     readonly  role: Role;
+
+    readonly slug:string;
+
+    readonly time_zone:string;
+    
+    readonly created_at:string;
+  
+    readonly updated_at:string;
   
 }

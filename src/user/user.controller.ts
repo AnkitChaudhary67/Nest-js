@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -19,23 +20,23 @@ import { extname } from 'path';
 import { UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleGuard } from 'src/role.guard';
+import  { AuthStrategy } from '../store/auth.strategy'
 
 @Controller()
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Post('/register')
-  signUp(@Body() signUpDto: SignUpDto): Promise<{ user: object }> {
-    return this.userService.signUp(signUpDto);
-  }
 
+
+  @Post('/register')
+  signUp(@Body() signUpDto: SignUpDto, @Req() req): Promise<{ user: object }> {
+    return this.userService.signUp(signUpDto, req.store_id);
+  }
 
   @Post('/login')
   login(@Body() loginDto: LoginDto): Promise<{ token: string }> {
     return this.userService.login(loginDto);
   }
-
-  
 
   // @Get('users')
   // async getUsers(): Promise<User[]> {

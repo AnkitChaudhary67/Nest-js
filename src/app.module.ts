@@ -7,6 +7,9 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { BookModule } from './book/book.module';
 import { AuthorModule } from './author/author.module';
+import { RoleModule } from './role/role.module';
+import { StoreModule } from './store/store.module';
+import { ProductModule } from './product/product.module';
 
 
 @Module({
@@ -20,6 +23,9 @@ import { AuthorModule } from './author/author.module';
   //  MulterModule.register({ dest: '/uploads'}),
    BookModule,
   AuthorModule,
+  RoleModule,
+  StoreModule,
+  ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

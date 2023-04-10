@@ -1,10 +1,11 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEmpty, IsEnum, IsNotEmpty, IsNumber, IsString, MinLength } from 'class-validator';
+import { Store } from 'src/store/schemas/store.schema';
 import { Role } from '../schemas/user.schema';
 
 export class SignUpDto {
   @IsNotEmpty()
   @IsString()
-  readonly name: string;
+  readonly user_name: string;
 
   @IsNotEmpty()
   @IsEmail({}, { message: 'Please enter correct email' })
@@ -19,6 +20,16 @@ export class SignUpDto {
   @IsEnum(Role, { message: 'Please enter correct role.' })
   readonly  role: Role;
 
+  @IsNotEmpty()
+@IsNumber()
+readonly phone:number
+
+@IsEmpty({ message: 'You cannot pass user id' })
+readonly store_id: Store;
+
+  readonly slug:string;
+
+readonly time_zone:string;
   
   readonly created_at:string;
 

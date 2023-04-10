@@ -49,11 +49,13 @@ export class BookService {
   }
 
   async create(book: Book, user: User): Promise<Book> {
+
     const data = Object.assign(book, { user: user._id });
 
     const res = await this.bookModel.create(data);
     return res;
   }
+
 
   async findById(id: string): Promise<Book> {
     const isValidId = mongoose.isValidObjectId(id);
