@@ -8,6 +8,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthStrategy } from './auth.strategy';
 import { Helper } from 'src/helpers/helper';
+import { CategorySchema } from 'src/category/schemas/category.schema';
+import { ProductSchema } from 'src/product/schemas/product.schema';
 
 @Module({
   imports:[
@@ -24,7 +26,9 @@ import { Helper } from 'src/helpers/helper';
         };
       },
     }),
-    MongooseModule.forFeature([{ name: 'Store', schema: StoreSchema }])
+    MongooseModule.forFeature([{ name: 'Store', schema: StoreSchema }]),
+    MongooseModule.forFeature([{ name: 'Category', schema: CategorySchema }]),
+    MongooseModule.forFeature([{ name: 'Product', schema: ProductSchema }])
   ],
   controllers: [StoreController],
   providers: [StoreService,AuthStrategy,Helper],

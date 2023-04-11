@@ -1,22 +1,32 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { Store } from './schemas/store.schema';
 const moment = require('moment-timezone');
 import jwt_decode from "jwt-decode";
 import { Helper } from 'src/helpers/helper';
+import { Category } from 'src/category/schemas/category.schema';
+import { Product } from 'src/product/schemas/product.schema';
 
 @Injectable()
 export class StoreService {
   constructor(
     @InjectModel(Store.name)
     private storeModel: Model<Store>,
-   
+    @InjectModel(Category.name)
+    private categoryModel: Model<Category>,
+    @InjectModel(Product.name)
+    private productModel: Model<Product>,
     private helper:Helper,
   ) {}
+
+  getObjectId(id: string): Types.ObjectId  {
+    return new Types.ObjectId(id)
+  }
+  
 
   async create(
     createStoreDto: CreateStoreDto,
@@ -84,5 +94,41 @@ export class StoreService {
     const offsetString =
       offsetHours > 0 ? `+${offsetHours}` : offsetHours.toString();
     return offsetString || 'UTC';
+  }
+
+  async storeCategoryProduct(id: string): Promise<any> {
+   
+    const store = await this.storeModel.aggregate([
+      {
+        $match: {
+          _id: this.getObjectId(id)
+        }
+      },
+      {
+        $lookup: {
+          // from: "categories",
+          from: this.categoryModel.collection.name,
+          foreignField: "store_id",
+          localField: "_id",
+          pipeline:[
+            {
+              $lookup: {
+                // from: "products",
+                from: this.productModel.collection.name,
+                foreignField: "category_id",
+                localField: "_id",
+                as: "product"
+              }
+            }
+          ],
+          as: "category"
+        }
+      }
+    ])
+
+    if (!store) {
+      throw new NotFoundException('User not found.');
+    }
+    return store;
   }
 }

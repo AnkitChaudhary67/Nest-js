@@ -28,6 +28,15 @@ export class StoreController {
   ): Promise<Store> {
     return this.storeService.findOne(id);;
   }
+
+  @Get('storeProduct/:id')
+  async getStoreDetailPro(
+    @Param('id')
+    id: string,
+  ): Promise<any> {
+    return this.storeService.storeCategoryProduct(id);;
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     

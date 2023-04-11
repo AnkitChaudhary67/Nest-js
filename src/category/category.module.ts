@@ -14,6 +14,7 @@ import { PassportModule } from '@nestjs/passport';
     MongooseModule.forFeature([{ name: 'Category', schema:CategorySchema }]),
   ],
   controllers: [CategoryController],
-  providers: [CategoryService,Helper]
+  providers: [CategoryService,Helper],
+  exports:[CategoryService]
 })
 export class CategoryModule {}
