@@ -7,9 +7,11 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthStrategy } from './auth.strategy';
+import { Helper } from 'src/helpers/helper';
 
 @Module({
   imports:[
+    Helper,
     PassportModule.register({ defaultStrategy: 'auth' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -25,7 +27,7 @@ import { AuthStrategy } from './auth.strategy';
     MongooseModule.forFeature([{ name: 'Store', schema: StoreSchema }])
   ],
   controllers: [StoreController],
-  providers: [StoreService,AuthStrategy],
+  providers: [StoreService,AuthStrategy,Helper],
   exports: [AuthStrategy, PassportModule]
 })
 export class StoreModule {}

@@ -27,6 +27,8 @@ readonly phone:number
 @IsEmpty({ message: 'You cannot pass user id' })
 readonly store_id: Store;
 
+// readonly store_id: string;
+
   readonly slug:string;
 
 readonly time_zone:string;

@@ -21,26 +21,44 @@ import { UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleGuard } from 'src/role.guard';
 import  { AuthStrategy } from '../store/auth.strategy'
+import { Store } from 'src/store/schemas/store.schema';
+import { StoreService } from 'src/store/store.service';
 
 @Controller()
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService ) {}
 
 
 
-  @Post('/register')
-  signUp(@Body() signUpDto: SignUpDto, @Req() req): Promise<{ user: object }> {
-    return this.userService.signUp(signUpDto, req.store_id);
+
+  @Post('/register/:id')
+  signUp(@Body() signUpDto: SignUpDto, @Param('id') id:string ): Promise<{ user: object }> {
+    return this.userService.signUp(signUpDto, id);
   }
-
+ 
   @Post('/login')
   login(@Body() loginDto: LoginDto): Promise<{ token: string }> {
     return this.userService.login(loginDto);
   }
 
-  // @Get('users')
+  @Get('users')
+  async getUsers(): Promise<User[]> {
+    return this.userService.findAll();
+  }
+
+
+  // @Get('stores')
   // async getUsers(): Promise<User[]> {
   //   return this.userService.findAll();
+  // }
+
+
+  // @Get(':id')
+  // async getStore(
+  //   @Param('id')
+  //   id: string,
+  // ): Promise<Store> {
+  //   return this.storeService.findStore(id);
   // }
 
   // @Get(':id')

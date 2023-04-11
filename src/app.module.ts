@@ -6,10 +6,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { BookModule } from './book/book.module';
-import { AuthorModule } from './author/author.module';
 import { RoleModule } from './role/role.module';
 import { StoreModule } from './store/store.module';
 import { ProductModule } from './product/product.module';
+import { Helper } from './helpers/helper';
+import { CategoryModule } from './category/category.module';
 
 
 @Module({
@@ -22,10 +23,11 @@ import { ProductModule } from './product/product.module';
    UserModule ,
   //  MulterModule.register({ dest: '/uploads'}),
    BookModule,
-  AuthorModule,
   RoleModule,
   StoreModule,
   ProductModule,
+  Helper,
+  CategoryModule
   ],
   controllers: [AppController],
   providers: [AppService],

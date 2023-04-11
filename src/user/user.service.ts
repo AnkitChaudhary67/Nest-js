@@ -13,23 +13,29 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-const moment = require('moment-timezone');
+
 import jwt_decode from 'jwt-decode';
 import { Store } from 'src/store/schemas/store.schema';
+import { Helper } from 'src/helpers/helper';
+
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>,
-    private jwtService: JwtService,
+    // private jwtService: JwtService,
+    private helper:Helper,
+    // private storeModel: Model<Store>,
+
   ) {}
 
   //register
 
 
 
-  async signUp(signUpDto: SignUpDto ,store:Store): Promise<{ token: string; user: object}> {
+  async signUp(signUpDto: SignUpDto , id:string): Promise<{ token: string; user: object}> {
+
    
     const {
       user_name,
@@ -42,8 +48,14 @@ export class UserService {
       created_at,
       updated_at,
     } = signUpDto;
+
+
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
+const time=this.helper.timeZone();
+const updated=this.helper.created();
+const created=this.helper.updated();
     const user = await this.userModel.create({
       user_name,
       email,
@@ -51,15 +63,31 @@ export class UserService {
       role,
       phone,
       slug,
-      store_id:store,
-      time_zone: 'America/Edmonton',
-      created_at: moment().tz('America/Edmonton').format(),
-      updated_at: moment().tz('America/Edmonton').format(),
+      store_id:id,
+      time_zone: time,
+      created_at: updated,
+      updated_at: created,
     });
 
-    const token = this.jwtService.sign({ _id: user._id });
+    const payload = {
+       _id: user._id,
+       email:user.email,
+      role: user.role,
+      slug: user.slug,
+      store_id:user.store_id, 
+      time_zone: user.time_zone,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    };
+    const token =  this.helper.createAcesstoken(payload);
+    const decode=this.helper.decodeAcesstoken(token)
+    console.log(decode);
+    
+    return { user, token };
 
-    return { token, user };
+    // const token = this.jwtService.sign({ _id: user._id });
+
+    // return { token, user };
   }
 
   //login
@@ -83,20 +111,35 @@ export class UserService {
     }
   
 
-
-    const token = this.jwtService.sign({
+    const payload = {
       _id: user._id,
-      role: user.role,
-      slug: user.slug,
-      time_zone: user.time_zone,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-    });
+      email:user.email,
+     role: user.role,
+     slug: user.slug,
+     store_id:user.store_id, 
+     time_zone: user.time_zone,
+     created_at: user.created_at,
+     updated_at: user.updated_at,
+    };
+    const token =  this.helper.createAcesstoken(payload);
 
-    const decoded = jwt_decode(token);
-    console.log(decoded);
+    // const token = this.jwtService.sign({
+    //   _id: user._id,
+    //   role: user.role,
+    //   slug: user.slug,
+    //   store_id:user.store_id, 
+    //   time_zone: user.time_zone,
+    //   created_at: user.created_at,
+    //   updated_at: user.updated_at,
+    // });
 
-    user.depopulate("-password")
+
+    const decode=this.helper.decodeAcesstoken(token)
+    console.log(decode);
+    
+    
+    // const decoded = jwt_decode(token);
+    // console.log(decoded);
     return { token, user };
   }
 
@@ -110,14 +153,33 @@ export class UserService {
   //   return users;
   // }
 
-  //getUserdetails
-  // async findById(id: string): Promise<User> {
-  //   const user = await this.userModel.findById(id).select("-password");
 
-  //   if (!user) {
+  async findAll(): Promise<User[]> {
+    const users = await this.userModel
+      .find().select("-password").populate("store_id")
+    return users;
+  }
+
+ 
+
+
+  // getStoredetails
+
+  // async findStore(id: string): Promise<Store> {
+   
+  //   const store = await this.storeModel.findById(id)
+
+  //   if (!store) {
   //     throw new NotFoundException('User not found.');
   //   }
-  //   return user;
+  //   return store;
+  // }
+
+
+  // getUserdetails
+  // async findById(id: string): Promise<User> {
+  //   const user = await this.userModel.findById(id).populate("store_id");
+  //   return user
   // }
 
   // delete user

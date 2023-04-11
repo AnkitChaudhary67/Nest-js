@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
+import { Store } from './schemas/store.schema';
 
 
 @Controller()
@@ -14,16 +15,22 @@ export class StoreController {
   }
 
 
-  
 
-  @Get()
-  findAll() {
-    return this.storeService.findAll();
+  @Get('getAllStoreDetails')
+  async getStore(): Promise<Store[]> {
+    return this.storeService.findStore();
   }
-
+ 
+  @Get(':id')
+  async getStoreDetail(
+    @Param('id')
+    id: string,
+  ): Promise<Store> {
+    return this.storeService.findOne(id);;
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.storeService.findOne(+id);
+    
   }
 
   @Patch(':id')

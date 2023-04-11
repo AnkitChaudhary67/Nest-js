@@ -41,6 +41,9 @@ export class User extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Store' })
   store_id: Store;
 
+  // @Prop()
+  // store_id:string;
+
   @Prop()
 time_zone:string;
 

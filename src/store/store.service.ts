@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -7,13 +7,15 @@ import { UpdateStoreDto } from './dto/update-store.dto';
 import { Store } from './schemas/store.schema';
 const moment = require('moment-timezone');
 import jwt_decode from "jwt-decode";
+import { Helper } from 'src/helpers/helper';
 
 @Injectable()
 export class StoreService {
   constructor(
     @InjectModel(Store.name)
     private storeModel: Model<Store>,
-    private jwtService: JwtService,
+   
+    private helper:Helper,
   ) {}
 
   async create(
@@ -30,7 +32,8 @@ export class StoreService {
       created_at: moment().tz('America/Edmonton').format(),
       updated_at: moment().tz('America/Edmonton').format(),
     });
-    const token = this.jwtService.sign({
+
+    const payload={
       _id: stores._id,
       name: name,
       role: role,
@@ -38,20 +41,33 @@ export class StoreService {
       time_zone: stores.time_zone,
       created_at:stores.created_at,
       updated_at:stores.updated_at
-    });
-   
- 
-const decoded = jwt_decode(token);
-console.log(decoded);
+    }
+  
+    const token =  this.helper.createAcesstoken(payload);
+    const decode=this.helper.decodeAcesstoken(token)
+    console.log(decode);
     return { token, stores };
   }
 
-  findAll() {
-    return `This action returns all store`;
+  async findStore(): Promise<Store[]> {
+    const stores = await this.storeModel.find()
+    return stores;
   }
+  
 
-  findOne(id: number) {
-    return `This action returns a #${id} store`;
+
+
+
+  async findOne(id: string): Promise<Store> {
+    
+   
+   
+    const store = await this.storeModel.findById(id)
+
+    if (!store) {
+      throw new NotFoundException('User not found.');
+    }
+    return store;
   }
 
   update(id: number, updateStoreDto: UpdateStoreDto) {
